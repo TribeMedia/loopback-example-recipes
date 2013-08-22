@@ -11,7 +11,8 @@
     "loopback": "git+ssh://git@github.com/strongloop/loopback.git",
     "request": "~2.21.0",
     "strong-task-emitter": "0.0.x",
-    "async": "~0.2.9"
+    "async": "~0.2.9",
+    "rc": "~0.3.0"
   },
   "devDependencies": {
     "supertest": "latest"

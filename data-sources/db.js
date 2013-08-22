@@ -4,7 +4,8 @@
 
 var loopback = require('loopback');
 
-var config = require('./db.json');
+var config = require('rc')('loopback');
+config = config.recipes || {};
 
 var dataSources = {};
 
@@ -19,7 +20,7 @@ module.exports = function(dataSourceName) {
         return null;
     }
 
-    dataSourceConfig.connector = dataSourceConfig.connector || loopback.Memory;
+    dataSourceConfig.connector = dataSourceName === 'memory' ? loopback.Memory : 'loopback-connector-' + dataSourceName;
 
     // console.log(dataSourceConfig);
     dataSources[dataSourceName] = loopback.createDataSource(dataSourceName, dataSourceConfig);
