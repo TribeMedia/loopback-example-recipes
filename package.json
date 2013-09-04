@@ -1,6 +1,6 @@
 {
   "name": "loopback-recipes",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Loopback Recipes",
   "main": "app.js",
   "dependencies": {
@@ -15,7 +15,7 @@
     "rc": "~0.3.0"
   },
   "devDependencies": {
-    "supertest": "latest"
+    "supertest": "~0.7.1"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
     "test": "mocha -b -R spec"
   },
   "author": "Raymond Feng <raymond@strongloop.com>",
-  "private": true,
-  "readmeFilename": "README.md"
+  "private": false,
+  "readmeFilename": "README.md",
+  "license": "MIT"
 }
