@@ -5,7 +5,7 @@
 var ds = require('../data-sources/db.js')('mongodb');
 
 // Create a open model that doesn't require a schema
-var Application = ds.createModel('MyApplication', {}, {strict: false});
+var Application = ds.createModel('MyApplication');
 
 // The application model can take any properties
 var application = {
@@ -29,7 +29,7 @@ var application = {
                     "interval": 300
                 }
             }}
-    ]}
+    ]};
 
 // Create a new instance
 console.log(new Application(application).toObject());

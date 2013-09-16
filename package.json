@@ -2,15 +2,13 @@
   "name": "loopback-recipes",
   "version": "1.0.0",
   "description": "Loopback Recipes",
-  "main": "app.js",
   "dependencies": {
-    "loopback-connector-oracle": "git+ssh://git@github.com/strongloop/loopback-connector-oracle.git",
-    "loopback-connector-rest": "git+ssh://git@github.com/strongloop/loopback-connector-rest.git",
-    "loopback-connector-mongodb": "git+ssh://git@github.com/strongloop/loopback-connector-mongodb.git",
-    "loopback-connector-mysql": "git+ssh://git@github.com/strongloop/loopback-connector-mysql.git",
-    "loopback": "git+ssh://git@github.com/strongloop/loopback.git",
+    "loopback-connector-oracle": "~1.0.0",
+    "loopback-connector-rest": "~1.0.0",
+    "loopback-connector-mongodb": "~1.0.0",
+    "loopback": "~1.0.0",
     "request": "~2.21.0",
-    "strong-task-emitter": "0.0.x",
+    "strong-task-emitter": "~0.0.4",
     "async": "~0.2.9",
     "rc": "~0.3.0"
   },
@@ -26,6 +24,5 @@
   },
   "author": "Raymond Feng <raymond@strongloop.com>",
   "private": false,
-  "readmeFilename": "README.md",
   "license": "MIT"
 }
