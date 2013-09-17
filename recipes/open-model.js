@@ -2,45 +2,34 @@
  * This example creates an open model (a model allows properties that are not predefined)
  * Set the 'strict' property to be false in the options when the model is defined
  */
-var ds = require('../data-sources/db.js')('mongodb');
+var loopback = require('loopback');
+var app = loopback();
+
+var ds = loopback.createDataSource('memory');
 
 // Create a open model that doesn't require a schema
-var Application = ds.createModel('MyApplication');
+var FormModel = ds.createModel('form');
 
-// The application model can take any properties
-var application = {
-    owner: 'rfeng',
-    name: 'MyApp1',
-    description: 'My first app',
-    pushSettings: [
-        {   "platform": "apns",
-            "apns": {
-                "pushOptions": {
-                    "gateway": "gateway.sandbox.push.apple.com",
-                    "cert": "credentials/apns_cert_dev.pem",
-                    "key": "credentials/apns_key_dev.pem"
-                },
+app.model(FormModel);
+app.use(loopback.rest());
 
-                "feedbackOptions": {
-                    "gateway": "feedback.sandbox.push.apple.com",
-                    "cert": "credentials/apns_cert_dev.pem",
-                    "key": "credentials/apns_key_dev.pem",
-                    "batchFeedback": true,
-                    "interval": 300
-                }
-            }}
-    ]};
+FormModel.create({x: 1, y: 2, z: 3}, function (err, form) {
+    console.log('Form 1', form);
+    FormModel.create({a: 'A', list: ['1', '2'], b: true, d: {x: 1, y: 2}}, function (err, form) {
+        console.log('Form 2', form);
 
-// Create a new instance
-console.log(new Application(application).toObject());
+        FormModel.find(function (err, forms) {
+            console.log('Forms', forms);
+            app.listen(3000, function () {
+                console.log('The form application is ready at http://127.0.0.1:3000');
 
-// Create a new instance and save it
-Application.create(application, function (err, app1) {
-    console.log('Created: ', app1.toObject());
-    // Find the application instance by id
-    Application.findById(app1.id, function (err, app2) {
-        console.log('Found: ', app2.toObject());
-        process.exit(0);
+                console.log('\nTo try it out, run the following command:');
+                console.log('curl -X POST -H "Content-Type:application/json" -d \'{"a": 1, "b": "B"}\' http://127.0.0.1:3000/forms');
+            });
+        });
     });
 });
+
+
+
 
