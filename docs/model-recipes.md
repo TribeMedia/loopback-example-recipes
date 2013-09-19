@@ -1,48 +1,53 @@
 # Recipes for LoopBack Models
 
-LoopBack is centered around models which represent business data and behaviors.
-Models are exposed to mobile applications through SDKs and REST APIs. In reality,
-mobile developers often need different ways to interact with models depending on
-where the data live and how the data is defined. In this blog, I'll walk you
-through a few recipes to work with LoopBack models to support various use cases.
+Rich mobile applications are driven by data. Data can be produced and consumed
+everywhere, including mobile devices, browsers, databases, cloud services,
+legacy applications, or whatever backend systems you have.
+
+LoopBack is designed to mobilize data. The facilities are centered around models
+which represent business data and behaviors. Models are exposed to mobile
+applications through SDKs and/or REST APIs. Depending on where the data live and
+how the data is defined. mobile developers often need different ways to interact
+with models. In this series of blogs, I'll walk you through a list of recipes to
+work with LoopBack models to support various use cases. It will cover:
+
+- Open models
+- Models with schema definitions
+- Model discovery with relational databases
+- Model synchronization with relational databases
+- Models by instance introspection
 
 Let's start with the simplest one.
 
-## An open model
+## Part 1: Open models
 
-> I'm mobile developer. Can LoopBack create the REST APIs to save and load my
-data? I don't have to worry about the backend or the model definition as my data
-are free form.
+> I'm mobile developer. Can LoopBack help me save and load data transparently?
+I just don't have to worry about the backend or define the model properties
+upfront as my data are free form.
 
 LoopBack can get you started right the way.
 
     var loopback = require('loopback');
-    var app = loopback();
+    var app = loopback(); // Create an instance of LoopBack
 
+    // Create an in memory data source
     var ds = loopback.createDataSource('memory');
 
-    // Create a open model that doesn't require a schema
+    // Create a open model that doesn't require predefined properties
     var FormModel = ds.createModel('form');
 
+    // Expose the model as REST APIs
     app.model(FormModel);
     app.use(loopback.rest());
 
-    FormModel.create({x: 1, y: 2, z: 3}, function (err, form) {
-        console.log('Form 1', form);
-        FormModel.create({a: 'A', list: ['1', '2'], b: true, d: {x: 1, y: 2}}, function (err, form) {
-            console.log('Form 2', form);
+    // Listen on HTTP requests
+    app.listen(3000, function () {
+        console.log('The form application is ready at http://127.0.0.1:3000');
 
-            FormModel.find(function (err, forms) {
-                console.log('Forms', forms);
-                app.listen(3000, function () {
-                    console.log('The form application is ready at http://127.0.0.1:3000');
-
-                    console.log('\nTo try it out, run the following command:');
-                    console.log('curl -X POST -H "Content-Type:application/json" -d \'{"a": 1, "b": "B"}\' http://127.0.0.1:3000/forms');
-                });
-            });
-        });
+        console.log('\nTo try it out, run the following command:');
+        console.log('curl -X POST -H "Content-Type:application/json" -d \'{"a": 1, "b": "B"}\' http://127.0.0.1:3000/forms');
     });
+
 
 Please note that we only pass a name to the ds.createModel(). This will create
 a model that allows any properties to be set on the model instances, i.e., an
@@ -84,7 +89,7 @@ the model doesn't constrain the properties and their types. But for other
 scenarios, a predefined model is preferred as it will validate the data and
 make sure the data is exchangeable between multiple systems.
 
-## A plain model
+## Part 2: Models with schema definitions
 
 > I want to build a mobile application which will interact with some backend
 data. I would love to see a working REST API and mobile SDK before I implement
@@ -106,22 +111,33 @@ a lot of server side code.
 
 You can now test the CRUD operations on the server side:
 
+    // Create two instances
     Customer.create({
         name: 'John1',
         emails: ['john@x.com', 'jhon@y.com'],
         age: 30
-    }, function (err, customer) {
-        console.log(customer.toObject());
+    }, function (err, customer1) {
+        console.log('Customer 1: ', customer1.toObject());
         Customer.create({
             name: 'John2',
             emails: ['john@x.com', 'jhon@y.com'],
             age: 30
-        }, function (err, customer) {
-            console.log(customer.toObject());
-            ds.disconnect();
+        }, function (err, customer2) {
+            console.log('Customer 2: ', customer2.toObject());
+            Customer.findById(customer2.id, function(err, customer3) {
+                console.log(customer3.toObject());
+            });
+            Customer.find({where: {name: 'John1'}, limit: 3}, function(err, customers) {
+                customers.forEach(function(c) {
+                    console.log(c.toObject());
+                });
+            });
         });
 
     });
+
+The code above creates two customers, find a customer by id, then find customers
+by name to return up to 3 instances.
 
 To expose the model as REST APIs:
 
@@ -148,7 +164,7 @@ Back to the model definition, do I always have to define the properties from
 scratch? The good news is that LoopBack can discover model definitions from
 existing systems such as relational databases or JSON documents.
 
-## Models by discovery
+## Part 3: Model Discovery with Relational Databases
 
 > I already have data in databases such as Oracle. Can LoopBack figure out the
 models and expose them as APIs to my mobile applications?
@@ -195,7 +211,134 @@ have well-defined schemas. But it's not always possible though, for example,
 MongoDB doesn't have schemas, nor does REST services. LoopBack has another option
 here.
 
-## Models by instances
+
+## Part 4: Model Synchronization with Relational Databases
+
+> Now I have defined a LoopBack model, can LoopBack create or update the
+database schemas for me?
+
+LoopBack data source for relational databases provide two methods to synchronize
+the model definitions with table schemas.
+
+- automigrate: Automatically create or re-create the table schemas based on the
+model definitions. **WARNING: Existing tables will be dropped if its name matches
+the model name.**
+
+- autoupdate: Automatically alter the table schemas based on the model definitions
+
+Let's start with first version of the model definition:
+
+    var schema_v1 =
+    {
+        "name": "CustomerTest",
+        "options": {
+            "idInjection": false,
+            "oracle": {
+                "schema": "LOOPBACK",
+                "table": "CUSTOMER_TEST"
+            }
+        },
+        "properties": {
+            "id": {
+                "type": "String",
+                "length": 20,
+                "id": 1
+            },
+            "name": {
+                "type": "String",
+                "required": false,
+                "length": 40
+            },
+            "email": {
+                "type": "String",
+                "required": false,
+                "length": 40
+            },
+            "age": {
+                "type": "Number",
+                "required": false
+            }
+        }
+    };
+
+Assuming the model doesn't have a corresponding table in the Oracle database,
+LoopBack can create the corresponding schema objects on behave of the model
+definition:
+
+    var ds = require('../data-sources/db')('oracle');
+    var Customer = require('../models/customer');
+
+    ds.createModel(schema_v1.name, schema_v1.properties, schema_v1.options);
+
+    ds.automigrate(function () {
+
+
+        ds.discoverModelProperties('CUSTOMER_TEST', function (err, props) {
+            console.log(props);
+
+        });
+
+    });
+
+Please note that a few objects are created on Oracle side:
+- A table CUSTOMER_TEST
+- A sequence CUSTOMER_TEST_ID_SEQUENCE (for keeping sequential IDs)
+- A trigger CUSTOMER_ID_TRIGGER (Setting IDs for the primary key)
+
+Now we decide to make some changes to the model. Here is the second version:
+
+    var schema_v2 =
+    {
+        "name": "CustomerTest",
+        "options": {
+            "idInjection": false,
+            "oracle": {
+                "schema": "LOOPBACK",
+                "table": "CUSTOMER_TEST"
+            }
+        },
+        "properties": {
+            "id": {
+                "type": "String",
+                "length": 20,
+                "id": 1
+            },
+            "email": {
+                "type": "String",
+                "required": false,
+                "length": 60,
+                "oracle": {
+                    "columnName": "EMAIL",
+                    "dataType": "VARCHAR",
+                    "dataLength": 60,
+                    "nullable": "Y"
+                }
+            },
+            "firstName": {
+                "type": "String",
+                "required": false,
+                "length": 40
+            },
+            "lastName": {
+                "type": "String",
+                "required": false,
+                "length": 40
+            }
+        }
+    }
+
+If we run automigrate again, the table will be dropped and data will be lost.
+Can we avoid that? Yes, autoupdate will do the job:
+
+    ds.createModel(schema_v2.name, schema_v2.properties, schema_v2.options);
+
+    ds.autoupdate(schema_v2.name, function (err, result) {
+        ds.discoverModelProperties('CUSTOMER_TEST', function (err, props) {
+            console.log(props);
+        });
+    });
+
+## Part 5: Models by Instance Introspection
 
 > I have JSON documents from REST services or NoSQL databases. Can LoopBack
 get my models out of them?
@@ -240,41 +383,22 @@ Sample code:
         });
     });
 
-## Model Synchronization
-
-> Now I have defined a LoopBack model, can LoopBack create or update the
-database schemas for me?
-
-Sample code:
-
-    var ds = require('../data-sources/db')('oracle');
-    var Customer = require('../models/customer');
-
-    ds.createModel(schema_v1.name, schema_v1.properties, schema_v1.options);
-
-    ds.automigrate(function () {
-
-
-        ds.discoverModelProperties('CUSTOMER_TEST', function (err, props) {
-            console.log(props);
-            ds.createModel(schema_v2.name, schema_v2.properties, schema_v2.options);
-
-            ds.autoupdate(schema_v2.name, function (err, result) {
-                ds.discoverModelProperties('CUSTOMER_TEST', function (err, props) {
-                    console.log(props);
-                });
-            });
-        });
-
-    });
-
 ## Summary
 
-|Recipe         | Use Case |  Model   | Database |
-|:-------------:|:--------:|:--------:|:--------:|
-| Open          |          |          |          |
-| Plain         |          |          |          |
-| Discovery     |          |          |          |
-| Introspection |          |          |          |
+Now we learn that a few different use cases and how LoopBack handles the different
+situations.
+
+|Recipe                    | Use Case                                     |  Model Strict Mode   | Database     |
+|:------------------------:|:--------------------------------------------:|:--------------------:|:------------:|
+| Open Model               | Taking care of free-form data                | false                | NoSQL        |
+| Plain Model              | Defining a model to represent data           | true or false        | NoSQL or RDB |
+| Model from discovery     | Consuming existing data from RDB             | true                 | RDB          |
+| Model from introspection | Consuming JSON data from NoSQL/REST          | false                | NoSQL        |
+
+## References
+
+1. https://github.com/strongloop/loopback-recipes
+2. http://docs.strongloop.com/loopback/
+3. http://docs.strongloop.com/loopback-connector-oracle/
 
 

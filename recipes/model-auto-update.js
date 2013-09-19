@@ -31,7 +31,7 @@ var schema_v1 =
             "required": false
         }
     }
-}
+};
 
 
 var schema_v2 =
@@ -72,7 +72,7 @@ var schema_v2 =
             "length": 40
         }
     }
-}
+};
 
 ds.createModel(schema_v1.name, schema_v1.properties, schema_v1.options);
 

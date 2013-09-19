@@ -1,5 +1,5 @@
 /**
- * This example demonstrates how to build a loopback data model from a JSON document
+ * This recipe demonstrates how to build a loopback data model from a JSON document
  */
 var ds = require('../data-sources/db.js')('memory');
 
