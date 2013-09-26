@@ -1,4 +1,4 @@
-# Recipes for LoopBack Models
+# Recipes for LoopBack models
 
 Rich mobile applications are driven by data.
 Data can be produced and consumed by mobile devices, browsers, cloud services, legacy applications, 
@@ -170,15 +170,15 @@ When defining a model, it may be troublesome to define all the properties from s
 Fortunately, LoopBack can discover a model definition from
 existing systems such as relational databases or JSON documents.
 
-## Part 3: Model Discovery with Relational Databases
+## Part 3: Model discovery with relational databases
 
 > I have data in an Orcale database. Can LoopBack figure out the
 models and expose them as APIs to my mobile applications?
 
 LoopBack makes it surprisingly simple to create models from existing data, 
 as illustrated below for an Oracle database.
-First, the code sets up the Oracle data source and then it calls `discoverAndBuildModels()` to create 
-models from the database tables. The 'association' option is set to true so that the discovery
+First, the code sets up the Oracle data source.  Then the call to `discoverAndBuildModels()` creates 
+models from the database tables with the `associations` option set to true so the discovery
 follows primary/foreign key relations.
 
 ````javascript
@@ -225,14 +225,15 @@ If not, then say WHERE it will be described (future blog, docs, etc.)
 > Now I have defined a LoopBack model, can LoopBack create or update the
 database schemas for me?
 
-LoopBack provides two methods to synchronize database model definitions with table schemas:
+LoopBack provides two ways to synchronize model definitions with table schemas:
 
 - Auto-migrate: Automatically create or re-create the table schemas based on the
 model definitions. **WARNING: An existing table will be dropped if its name matches
 the model name.**
 - Auto-update: Automatically alter the table schemas based on the model definitions.
 
-Let's start with first version of the model definition:
+### Auto-migration
+Let's start with auto-migration of model definition:
 
 ````javascript
     var schema_v1 =
@@ -270,31 +271,32 @@ Let's start with first version of the model definition:
 ````
 
 Assuming the model doesn't have a corresponding table in the Oracle database,
-LoopBack can create the corresponding schema objects on behave of the model
-definition:
+you can create the corresponding schema objects on behalf of the model definition:
+<!-- This said "on behave of the model definition"  Is this the correct interpretation? -->
 
+````javascript
     var ds = require('../data-sources/db')('oracle');
     var Customer = require('../models/customer');
 
     ds.createModel(schema_v1.name, schema_v1.properties, schema_v1.options);
 
     ds.automigrate(function () {
-
-
         ds.discoverModelProperties('CUSTOMER_TEST', function (err, props) {
             console.log(props);
-
         });
-
     });
+````
 
-Please note that a few objects are created on Oracle side:
-- A table CUSTOMER_TEST
-- A sequence CUSTOMER_TEST_ID_SEQUENCE (for keeping sequential IDs)
-- A trigger CUSTOMER_ID_TRIGGER (Setting IDs for the primary key)
+This creates the following objects in the Oracle database:
+- A table CUSTOMER_TEST.
+- A sequence CUSTOMER_TEST_ID_SEQUENCE for keeping sequential IDs.
+- A trigger CUSTOMER_ID_TRIGGER that sets IDs for the primary key.
+
+<!-- Is last item worded correctly? -->
 
 Now we decide to make some changes to the model. Here is the second version:
 
+````javascript
     var schema_v2 =
     {
         "name": "CustomerTest",
@@ -334,10 +336,13 @@ Now we decide to make some changes to the model. Here is the second version:
             }
         }
     }
+````
 
-If we run automigrate again, the table will be dropped and data will be lost.
-Can we avoid that? Yes, autoupdate will do the job:
+### Auto-update
+If we run auto-migrate again, <!--- can we say "multiple times"? ---> the table will be dropped and data will be lost.
+To avoid this problem use auto-update, as illustrated here:
 
+````javascript
     ds.createModel(schema_v2.name, schema_v2.properties, schema_v2.options);
 
     ds.autoupdate(schema_v2.name, function (err, result) {
@@ -345,14 +350,16 @@ Can we avoid that? Yes, autoupdate will do the job:
             console.log(props);
         });
     });
+````
 
-## Part 5: Models by Instance Introspection
+## Part 5: Models by instance introspection
 
-> I have JSON documents from REST services or NoSQL databases. Can LoopBack
-get my models out of them?
+> I have JSON documents from REST services and NoSQL databases. Can LoopBack
+get my models from them?
 
-Sample code:
+Yes, certainly!  Here is an example:
 
+````javascript
     var ds = require('../data-sources/db.js')('memory');
 
     // Instance JSON document
@@ -390,14 +397,18 @@ Sample code:
             console.log('Found: ', u2.toObject());
         });
     });
+````
 
 ## Summary
 
-Now we learn that a few different use cases and how LoopBack handles the different
-situations.
+<!-- Suggest move this table to beginning of section.  It will get lost down here.  
+Add a note about what future blog posts will cover.
+--->
+
+We've walked through a few different use cases and how LoopBack handles each.
 
 |Recipe                    | Use Case                                     |  Model Strict Mode   | Database     |
-|:------------------------:|:--------------------------------------------:|:--------------------:|:------------:|
+|--------------------------|----------------------------------------------|----------------------|-------------|
 | Open Model               | Taking care of free-form data                | false                | NoSQL        |
 | Plain Model              | Defining a model to represent data           | true or false        | NoSQL or RDB |
 | Model from discovery     | Consuming existing data from RDB             | true                 | RDB          |
