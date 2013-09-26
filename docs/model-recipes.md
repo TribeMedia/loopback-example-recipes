@@ -4,8 +4,7 @@ Rich mobile applications are driven by data.
 Data can be produced and consumed by mobile devices, browsers, cloud services, legacy applications, 
 databases, and other backend systems.
 
-LoopBack mobilizes data through _models_ that represent business data and behavior.  
-LoopBack exposes models to mobile apps through REST APIs and client SDKs. 
+LoopBack mobilizes data through _models_ that represent business data and behavior.  LoopBack exposes models to mobile apps through REST APIs and client SDKs. 
 You need to interact with the model differently, depending on the location and type of data.
 In this article, I'll explain some of the most important recipes for working with LoopBack models:
 <!--- changed from "series of blogs because below only describes THIS post --->
@@ -339,8 +338,9 @@ Now we decide to make some changes to the model. Here is the second version:
 ````
 
 ### Auto-update
-If we run auto-migrate again, <!--- can we say "multiple times"? ---> the table will be dropped and data will be lost.
+If we run auto-migrate again,  the table will be dropped and data will be lost. 
 To avoid this problem use auto-update, as illustrated here:
+<!--- can we say "multiple times"? --->
 
 ````javascript
     ds.createModel(schema_v2.name, schema_v2.properties, schema_v2.options);
