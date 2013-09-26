@@ -6,15 +6,15 @@ databases, and other backend systems.
 
 LoopBack mobilizes data through _models_ that represent business data and behavior.  
 LoopBack exposes models to mobile apps through REST APIs and client SDKs. 
-Mobile developers need different ways to interact with models, depending on the location and type of data.
+You need to interact with the model differently, depending on the location and type of data.
+In this article, I'll explain some of the most important recipes for working with LoopBack models:
+<!--- changed from "series of blogs because below only describes THIS post --->
 
-In this series of blogs, I'll walk you through some of the most important recipes for working with LoopBack models:
-
-- [Open models](#part-1-open-models).
-- [Models with schema definitions](#part-2-models-with-schema-definitions).
-- Model discovery with relational databases.
-- Model synchronization with relational databases.
-- Models by instance introspection.
+- [Open models](#part-1-open-models) - for free-form data.
+- [Models with schema definitions](#part-2-models-with-schema-definitions) such as relational databases.
+- [Model discovery with relational databases](#part-3-model-discovery-with-relational-databases) - consuming existing data from a relational database.   
+- [Model synchronization with relational databases](#part-4-model-synchronization-with-relational-databases) - keeping your model synchronized with the database.
+- [Models by instance introspection](#part-5-models-by-instance-introspection) - Consuming JSON data from NoSQL databases or REST APIs.
 
 Let's start with the simplest one: open models.
 
@@ -25,7 +25,7 @@ I don't need to worry about the backend or define the model up front, because my
 
 For free-form data, use an _open model_ that allows you to set any properties on model instances.
 
-The following code creates an open model and exposes it as a REST API.
+The following code creates an open model and exposes it as a REST API:
 
 ```javascript
     var loopback = require('loopback');
@@ -47,7 +47,7 @@ The following code creates an open model and exposes it as a REST API.
     });
 ```
 
-Notice that we call `ds.createModel()` with only a name to create an open model.
+Notice the call to `ds.createModel()` with only a name to create an open model.
 
 To try it out, enter the following command:
 
@@ -84,10 +84,10 @@ Now you see the newly created instance as follows:
       "d": true
     }
 
-The open model is simple and flexible. It works well for free-form style data as
+The open model is simple and flexible. It works well for free-form style data because
 the model doesn't constrain the properties and their types. But for other
-scenarios, a predefined model is preferred as it will validate the data and
-ensure it can be exchanged by multiple systems.
+scenarios, a predefined model is preferred to validate the data and
+ensure it can be exchanged among multiple systems.
 
 ## Part 2: Models with schema definitions
 
@@ -141,7 +141,7 @@ by name to return up to three customer records.
     });
 ````
 
-To expose the model as REST APIs, use the following:
+To expose the model as a REST API, use the following:
 
 ```javascript
     var app = loopback();
@@ -153,7 +153,7 @@ To expose the model as REST APIs, use the following:
 ```
 
 Until now the data access has been backed by an in-memory store. To make your data
-persistent, you simply replace it with a MongoDB database by changing the
+persistent, simply replace it with a MongoDB database by changing the
 data source configuration:
 
 ```javascript
@@ -168,7 +168,7 @@ data source configuration:
 
 When defining a model, it may be troublesome to define all the properties from scratch.
 Fortunately, LoopBack can discover a model definition from
-existing systems such as relational databases or JSON documents.
+existing systems such as relational databases or JSON documents, as we'll show in the next section.
 
 ## Part 3: Model discovery with relational databases
 
@@ -178,8 +178,8 @@ models and expose them as APIs to my mobile applications?
 LoopBack makes it surprisingly simple to create models from existing data, 
 as illustrated below for an Oracle database.
 First, the code sets up the Oracle data source.  Then the call to `discoverAndBuildModels()` creates 
-models from the database tables with the `associations` option set to true so the discovery
-follows primary/foreign key relations.
+models from the database tables.  Calling it with  `associations: true` makes the discovery
+follow primary/foreign key relations.
 
 ````javascript
     var loopback = require('loopback');
@@ -217,7 +217,7 @@ Discovery from relational databases is a quick way to consume existing data with
 However, some data stores don't have schemas; for example, MongoDB or REST services. LoopBack has another option
 here.
 <!-- Should this really be mentioned here?  It sounds like you're about to describe this "other option".
-If not, then say WHERE it will be described (future blog, docs, etc.)
+If not, then say WHERE it is described (last section?)
 --->
 
 ## Part 4: Model synchronization with relational databases
@@ -233,7 +233,7 @@ the model name.**
 - Auto-update: Automatically alter the table schemas based on the model definitions.
 
 ### Auto-migration
-Let's start with auto-migration of model definition:
+Let's start with auto-migration of model definition.  Here's an example:
 
 ````javascript
     var schema_v1 =
@@ -352,6 +352,8 @@ To avoid this problem use auto-update, as illustrated here:
     });
 ````
 
+<!-- Is there more to say about auto-update?? -->
+
 ## Part 5: Models by instance introspection
 
 > I have JSON documents from REST services and NoSQL databases. Can LoopBack
@@ -401,11 +403,12 @@ Yes, certainly!  Here is an example:
 
 ## Summary
 
-<!-- Suggest move this table to beginning of section.  It will get lost down here.  
+<!--  
+Table below does not include synchronization... Is that intentional?
 Add a note about what future blog posts will cover.
 --->
 
-We've walked through a few different use cases and how LoopBack handles each.
+This article has walked through a few different use cases and how LoopBack handles each.
 
 |Recipe                    | Use Case                                     |  Model Strict Mode   | Database     |
 |--------------------------|----------------------------------------------|----------------------|-------------|
