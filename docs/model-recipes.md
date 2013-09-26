@@ -10,8 +10,8 @@ Mobile developers need different ways to interact with models, depending on the 
 
 In this series of blogs, I'll walk you through some of the most important recipes for working with LoopBack models:
 
-- Open models.
-- Models with schema definitions.
+- [Open models](#part-1-open-models).
+- [Models with schema definitions](#part-2-models-with-schema-definitions).
 - Model discovery with relational databases.
 - Model synchronization with relational databases.
 - Models by instance introspection.
