@@ -8,9 +8,8 @@ var ds = require('../data-sources/db.js')('oracle');
  */
 ds.discoverAndBuildModels('INVENTORY', {visited: {}, associations: true}, function (err, models) {
 
-    // console.log(models.Inventory);
     models.Inventory.findOne({}, function (err, inv) {
-        if(err) {
+        if (err) {
             console.error(err);
             return;
         }
