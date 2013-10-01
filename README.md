@@ -4,7 +4,8 @@ The project contains a list of recipes to demonstrate various usage patterns of 
 
 ## Configure the data sources
 
-You need to provide .loopbackrc file in the project or home directory, for example:
+The project ships a default configuration file [.loopbackrc[(.loopbackrc). You can customize it to use your own
+database servers. For example,
 
         {
         "recipes": {
