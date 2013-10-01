@@ -1,6 +1,6 @@
 # loopback-recipes
 
-LoopBack recipes to demonstrate various usage patterns.
+The project contains a list of recipes to demonstrate various usage patterns of LoopBack models.
 
 ## Configure the data sources
 
@@ -31,13 +31,22 @@ You need to provide .loopbackrc file in the project or home directory, for examp
             }
         }
 
-## Recipes
+## List of recipes
 
-- model.js: A simple model backed by MongoDB
-- model-auto-migration.js: Use Oracle connector's automigrate
-- model-auto-update.js: Use Oracle connector's autoupdate
-- model-from-discovery.js: Use Oracle connector's discovery
-- model-from-instance.js: Use JSON instance introspection
-- open-model.js: An open model that accepts any properties
+- [open-model.js](recipes/open-model.js): An open model that accepts any properties
+- [model.js](recipes/model.js): A simple model backed by MongoDB
+- [model-auto-migration.js](recipes/model-auto-migration.js): Use Oracle connector's automigrate
+- [model-auto-update.js](recipes/model-auto-update.js): Use Oracle connector's autoupdate
+- [model-from-discovery.js](recipes/model-from-discovery.js): Use Oracle connector's discovery
+- [model-from-instance.js](recipes/model-from-instance.js): Use JSON instance introspection
+
+To run a recipe, for example, open-model:
+
+    node recipes/open-model
+
+## License
+MIT
+
+
 
 
