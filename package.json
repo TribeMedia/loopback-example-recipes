@@ -1,23 +1,23 @@
 {
-  "name": "loopback-recipes",
+  "name": "loopback-sample-recipes",
   "version": "1.0.0",
-  "description": "Loopback Recipes",
+  "description": "Sample Recipes for LoopBack Models",
   "dependencies": {
     "loopback-connector-oracle": "~1.0.0",
     "loopback-connector-rest": "~1.0.0",
     "loopback-connector-mongodb": "~1.0.0",
     "loopback": "~1.0.0",
-    "request": "~2.21.0",
-    "strong-task-emitter": "~0.0.4",
+    "request": "~2.27.0",
+    "strong-task-emitter": "~0.0.5",
     "async": "~0.2.9",
-    "rc": "~0.3.0"
+    "rc": "~0.3.1"
   },
   "devDependencies": {
-    "supertest": "~0.7.1"
+    "supertest": "~0.8.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/strongloop/loopback-recipes.git"
+    "url": "https://github.com/strongloop/loopback-sample-recipes.git"
   },
   "scripts": {
     "test": "mocha -b -R spec"
