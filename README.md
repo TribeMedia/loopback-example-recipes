@@ -1,6 +1,6 @@
-# loopback-recipes
+# loopback-sample-recipes
 
-The project contains a list of recipes to demonstrate various usage patterns of LoopBack models.
+The project contains a list of sample recipes to demonstrate various usage patterns of LoopBack models.
 
 ## Configure the data sources
 
