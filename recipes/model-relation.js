@@ -1,5 +1,6 @@
 var ds = require('../data-sources/db.js')('mongodb');
 
+// A function to show error/result with a prefix message
 function show(msg) {
     return function (err, result) {
         if (err) {
@@ -28,6 +29,7 @@ var Customer = ds.createModel('Customer', {
 
 Order.belongsTo(Customer);
 
+// Use the belongsTo relation
 Customer.create({name: 'John'}, function (err, customer) {
     show('First customer', err, customer);
     Order.create({customerId: customer.id, orderDate: new Date()}, function (err, order) {
@@ -48,6 +50,7 @@ Customer.create({name: 'John'}, function (err, customer) {
 
 Customer.hasMany(Order, {as: 'orders', foreignKey: 'customerId'});
 
+// Use the hasMany relation
 Customer.create({name: 'Ray'}, function (err, customer) {
     console.log('Third customer', customer);
     Order.create({customerId: customer.id, orderDate: new Date()}, function (err, order) {
@@ -81,16 +84,19 @@ var Appointment = ds.createModel('Appointment', {
     appointmentDate: Date
 });
 
+// Connect Appointment to Patient & Physician
 Appointment.belongsTo(Patient);
 Appointment.belongsTo(Physician);
 
+// Now we can create many to many relation between Physician and Patient through Appointment
 Physician.hasMany(Patient, {through: Appointment});
 Patient.hasMany(Physician, {through: Appointment});
 
+// Use the hasMany-through relation
 Physician.create({name: 'Smith', id: 'ph1'}, function (err, physician) {
-    console.log('Physician', physician);
+    show('Physician')(err, physician);
     Patient.create({name: 'Mary', id: 'pa1'}, function (err, patient) {
-        console.log('Patient', patient);
+        show('Patient')(err, patient);
         Appointment.create({appointmentDate: new Date(), physicianId: physician.id, patientId: patient.id},
             function (err, appointment) {
                 show('Appointment')(err, appointment);
@@ -115,12 +121,13 @@ var Part = ds.createModel('Part', {
 Assembly.hasAndBelongsToMany(Part);
 Part.hasAndBelongsToMany(Assembly);
 
+// Use the hasAndBelongsToMany relation
 Assembly.create({name: 'car'}, function (err, assembly) {
-    console.log('Assembly', assembly);
+    show('Assembly')(err, assembly);
     Part.create({partNumber: 'engine'}, function (err, part) {
-        console.log('Part', part);
+        show('Part')(err, part);
         assembly.parts.add(part, function (err) {
-            assembly.parts(console.log);
+            assembly.parts(show('Parts for assembly ' + assembly.id));
         });
 
     });
