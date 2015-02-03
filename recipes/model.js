@@ -11,7 +11,7 @@ var Customer = ds.createModel('customer', {
     name: String,
     emails: [String],
     age: Number},
-    {strcit: true});
+    {strict: true});
 
 // Create two instances
 Customer.create({
