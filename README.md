@@ -43,7 +43,7 @@ database servers. For example,
 
 To run a recipe, for example, open-model:
 
-    node recipes/open-model
+    $ node recipes/open-model
 
 ## License
 MIT
