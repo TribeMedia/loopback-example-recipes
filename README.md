@@ -47,7 +47,3 @@ To run a recipe, for example, open-model:
 
 ## License
 MIT
-
-
-
-
