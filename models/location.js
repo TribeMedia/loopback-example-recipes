@@ -75,7 +75,10 @@ loopback.remoteMethod(
  * Build the geo data when saving using the google maps api.
  */
 
-RentalLocation.beforeSave = function (next, loc) {
+RentalLocation.observe('before save', function (ctx, next) {
+
+  var loc = ctx.instance;
+  
   // geo code the address
   if(!loc.geo) {
     rest.geocode(loc.street, loc.city, loc.zipcode, function (err, res, result) {
@@ -89,5 +92,5 @@ RentalLocation.beforeSave = function (next, loc) {
   } else {
     next();
   }
-}
+});
 
